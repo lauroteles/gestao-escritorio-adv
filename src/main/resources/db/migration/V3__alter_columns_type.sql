@@ -1,0 +1,2 @@
+ALTER TABLE andamentos
+ALTER COLUMN data_andamentos TYPE TIMESTAMP;
