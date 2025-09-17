@@ -3,12 +3,13 @@ package com.gestaoescritorio.gestao.controller;
 import com.gestaoescritorio.gestao.dto.processoDTO;
 import com.gestaoescritorio.gestao.service.ProcessosService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/processos")
@@ -18,7 +19,6 @@ public class ProcessosController {
     private ProcessosService processosService;
 
     @PostMapping("/cadastrar")
-
     public ResponseEntity<String> cadastrasProcesso(@RequestBody processoDTO dto) {
         try {
             processosService.criarProcesso(dto);
@@ -27,6 +27,17 @@ public class ProcessosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro na criação do processo, favor verificar as informações" + exception);
         }
 
+    }
+
+    @GetMapping("/tabela-processos")
+    public ResponseEntity<?> tabelaProcessos(Pageable pageable) {
+        try {
+            Page<processoDTO> processos = processosService.listarProcessos(pageable);
+            return ResponseEntity.ok(processos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("ERRO NA REQUISIÇÃO DA TABELA: " + e.getMessage());
+        }
     }
 
 
