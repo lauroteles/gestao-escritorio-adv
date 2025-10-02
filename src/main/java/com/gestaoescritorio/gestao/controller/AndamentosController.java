@@ -36,4 +36,43 @@ public class AndamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("vencimentos-1-semana")
+    public ResponseEntity<?> vencimentoUmaSemana() {
+        try {
+            Long total = andamentoService.getTotalItensProximaSemana();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição");
+        }
+    }
+
+    @GetMapping("andamentos-1-semana")
+    public ResponseEntity<?> andamentosvVencimentoUmaSemana() {
+        try {
+            List<AndamentosDTO> total = andamentoService.getTotalAndamentosProximaSemana();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição");
+        }
+    }
+    @GetMapping("vencimentos-1-mes")
+    public ResponseEntity<?> vencimentoUmMes() {
+        try {
+            Long total = andamentoService.getTotalItensProximaMes();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição de total 1 mes");
+        }
+    }
+    @GetMapping("vencimentos-15-dias")
+    public ResponseEntity<?> vencimentoUmQuinzeDias() {
+        try {
+            Long total = andamentoService.getTotalItensProximos15Dias();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição de total 1 mes");
+        }
+    }
+
 }

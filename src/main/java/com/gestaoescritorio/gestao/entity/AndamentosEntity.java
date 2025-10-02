@@ -1,7 +1,6 @@
 package com.gestaoescritorio.gestao.entity;
 
 
-import com.gestaoescritorio.gestao.enums.AndamentoEnum;
 import jakarta.persistence.*;
 import jdk.jfr.Unsigned;
 import lombok.*;
@@ -34,8 +33,7 @@ public class AndamentosEntity {
     private LocalDateTime dataConferencia;
 
     @Column(name = "responsavel_pela_conferencia")
-    @Enumerated(EnumType.STRING)
-    private AndamentoEnum responsavelConferencia;
+    private String responsavelConferencia;
 
     @ManyToOne
     @JoinColumn(name = "processos_numero",referencedColumnName = "processos_numero")
