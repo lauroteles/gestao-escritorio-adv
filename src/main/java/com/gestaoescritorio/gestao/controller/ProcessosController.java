@@ -5,6 +5,7 @@ import com.gestaoescritorio.gestao.service.ProcessosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,16 @@ public class ProcessosController {
     }
 
     @GetMapping("/tabela-processos")
-    public ResponseEntity<?> tabelaProcessos(Pageable pageable) {
+    public ResponseEntity<?> tabelaProcessos(@RequestParam(required = false) String processoNumero,
+                                             @RequestParam(required = false) String nome,
+                                             @RequestParam(required = false) String tribunal,
+                                             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
         try {
-            Page<processoDTO> processos = processosService.listarProcessos(pageable);
+            Page<processoDTO> processos = processosService.listarProcessos(
+                    processoNumero,
+                    nome,
+                    tribunal,
+                    pageable);
             return ResponseEntity.ok(processos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
