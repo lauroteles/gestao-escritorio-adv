@@ -5,8 +5,10 @@ import com.gestaoescritorio.gestao.entity.AndamentosEntity;
 import com.gestaoescritorio.gestao.entity.ProcessosEntity;
 import com.gestaoescritorio.gestao.repository.AndamentoRepository;
 import com.gestaoescritorio.gestao.repository.ProcessoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.And;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.RecursiveTask;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +63,7 @@ public class AndamentoService {
         return andamentoRepository.findByProcesso_ProcessoNumero(numeroProcesso)
                 .stream()
                 .map(a -> new AndamentosDTO(
+                        a.getId(),
                         a.getDataAndamento(),
                         a.getPrazoFinal(),
                         a.getObservacao(),
@@ -79,6 +86,7 @@ public class AndamentoService {
         return andamentoRepository.andamentosVencendoNaSemana(dataLimiteDate)
                 .stream()
                 .map(a -> new AndamentosDTO(
+                        a.getId(),
                         a.getDataAndamento(),
                         a.getPrazoFinal(),
                         a.getObservacao(),
@@ -104,5 +112,52 @@ public class AndamentoService {
     }
 
 
+    public Long getTotalItensnoDia() {
+        LocalDate dataLimite = LocalDate.now().plusDays(1);
+        Date dataLimiteDate = Date.from(dataLimite.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return andamentoRepository.totalVencimentosNoDia(dataLimiteDate);
+    }
 
+    public List<AndamentosDTO> getTotalAndamentosHoje() {
+        LocalDate dataLimite = LocalDate.now().plusDays(1);
+        Date dataLimiteDate = Date.from(dataLimite.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return andamentoRepository.andamentosVencendoNoDia(dataLimiteDate)
+                .stream()
+                .map(a -> new AndamentosDTO(
+                        a.getId(),
+                        a.getDataAndamento(),
+                        a.getPrazoFinal(),
+                        a.getObservacao(),
+                        a.getDataConferencia(),
+                        a.getResponsavelConferencia(),
+                        a.getProcesso().getProcessoNumero()
+
+                )).toList();
+    }
+
+    @Transactional
+    public Optional<AndamentosDTO> updateObservacao (String observacao, Long id) {
+
+
+        Optional<AndamentosEntity> opAndamentos = andamentoRepository.findById(id);
+
+        AndamentosEntity andamento = opAndamentos.get();
+        andamento.setObservacao(observacao);
+        andamentoRepository.save(andamento);
+
+        return Optional.of(toDTO(andamento));
+    }
+
+    private AndamentosDTO toDTO (AndamentosEntity a) {
+        return new AndamentosDTO(
+                a.getId(),
+                a.getDataAndamento(),
+                a.getPrazoFinal(),
+                a.getObservacao(),
+                a.getDataConferencia(),
+                a.getResponsavelConferencia(),
+                a.getProcesso().getProcessoNumero()
+        );
+
+    }
 }
