@@ -110,6 +110,42 @@ public class AndamentoService {
         Date dataLimiteDate = Date.from(dataLimite.atStartOfDay(ZoneId.systemDefault()).toInstant());
         return andamentoRepository.totalVencimentosEmQuinzeDias(dataLimiteDate);
     }
+    public List<AndamentosDTO> getTotalAndamentos15dias() {
+        LocalDate dataLimite = LocalDate.now().plusDays(15);
+        Date dataLimiteDate = Date.from(dataLimite.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return andamentoRepository.andamentosVencendoNoDia(dataLimiteDate)
+                .stream()
+                .map(a -> new AndamentosDTO(
+                        a.getId(),
+                        a.getDataAndamento(),
+                        a.getPrazoFinal(),
+                        a.getObservacao(),
+                        a.getDataConferencia(),
+                        a.getResponsavelConferencia(),
+                        a.getProcesso().getProcessoNumero()
+
+                )).toList();
+    }
+    public List<AndamentosDTO> getTotalAndamentos30dias() {
+        LocalDate dataLimite = LocalDate.now().plusDays(30);
+        Date dataLimiteDate = Date.from(dataLimite.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return andamentoRepository.andamentosVencendoNoDia(dataLimiteDate)
+                .stream()
+                .map(a -> new AndamentosDTO(
+                        a.getId(),
+                        a.getDataAndamento(),
+                        a.getPrazoFinal(),
+                        a.getObservacao(),
+                        a.getDataConferencia(),
+                        a.getResponsavelConferencia(),
+                        a.getProcesso().getProcessoNumero()
+
+                )).toList();
+    }
+
+
+
+
 
 
     public Long getTotalItensnoDia() {
@@ -147,6 +183,29 @@ public class AndamentoService {
 
         return Optional.of(toDTO(andamento));
     }
+
+    @Transactional
+    public Optional<AndamentosDTO> updatePrazoFinal (Date prazoFinal, Long id) {
+
+        Optional<AndamentosEntity> opAndamentos = andamentoRepository.findById(id);
+
+        AndamentosEntity andamento = opAndamentos.get();
+        andamento.setPrazoFinal(prazoFinal);
+        andamentoRepository.save(andamento);
+
+        return Optional.of(toDTO(andamento));
+    }
+    @Transactional
+    public void deleteAndamento (Long id) {
+
+        Optional<AndamentosEntity> opAndamentos = andamentoRepository.findById(id);
+
+        AndamentosEntity andamento = opAndamentos.get();
+        andamentoRepository.delete(andamento);
+
+    }
+
+
 
     private AndamentosDTO toDTO (AndamentosEntity a) {
         return new AndamentosDTO(

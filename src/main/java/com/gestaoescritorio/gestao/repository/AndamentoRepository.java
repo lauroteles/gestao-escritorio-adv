@@ -33,6 +33,9 @@ public interface AndamentoRepository extends JpaRepository<AndamentosEntity, Lon
     @Query("SELECT i FROM AndamentosEntity i WHERE i.prazoFinal < :dateLimit")
     List<AndamentosEntity> andamentosVencendoNoDia(Date dateLimit);
 
+    @Query("SELECT i FROM AndamentosEntity i WHERE i.prazoFinal < :dateLimit")
+    List<AndamentosEntity> andamentosVencendoNoPrazoX(Date dateLimit);
+
     @Query("SELECT COUNT(i) FROM AndamentosEntity i WHERE i.prazoFinal < :dataLimite")
     Long totalVencimentosNoDia(@Param("dataLimite") Date dataLimite);
 
@@ -40,7 +43,6 @@ public interface AndamentoRepository extends JpaRepository<AndamentosEntity, Lon
             "SET ae.observacao = :observacao " +
             "WHERE ae.id = :id")
     Optional<AndamentosEntity> UpdateObservações(@Param("observacao") String observacao, @Param("processoNumero") Long id);
-
 
 
 }

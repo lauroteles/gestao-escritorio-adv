@@ -3,14 +3,12 @@ package com.gestaoescritorio.gestao.controller;
 import com.gestaoescritorio.gestao.dto.AndamentosDTO;
 import com.gestaoescritorio.gestao.service.AndamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/andamentos")
@@ -79,6 +77,26 @@ public class AndamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição");
         }
     }
+
+    @GetMapping("andamentos-15-dias")
+    public ResponseEntity<?> andamentosvVencimento15Dias() {
+        try {
+            List<AndamentosDTO> total = andamentoService.getTotalAndamentos15dias();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição");
+        }
+    }
+    @GetMapping("andamentos-30-dias")
+    public ResponseEntity<?> andamentosvVencimento30Dias() {
+        try {
+            List<AndamentosDTO> total = andamentoService.getTotalAndamentos30dias();
+            return ResponseEntity.status(HttpStatus.OK).body(total);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição");
+        }
+    }
+
     @GetMapping("vencimentos-1-mes")
     public ResponseEntity<?> vencimentoUmMes() {
         try {
@@ -97,6 +115,16 @@ public class AndamentosController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição de total 1 mes");
         }
     }
+    @PostMapping("deletar-andamento")
+    public ResponseEntity<?> deletarAndamento(@RequestParam Long id) {
+        try {
+            andamentoService.deleteAndamento(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Andamento deletado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e + "Erro na requisição de total 1 mes");
+        }
+    }
+
 
     @PutMapping("/observacao")
     public ResponseEntity<?> updateObservacao(
@@ -105,5 +133,17 @@ public class AndamentosController {
         Optional<AndamentosDTO> linhasAfetadas = andamentoService.updateObservacao(observacao, id);
         return ResponseEntity.status(HttpStatus.OK).body(linhasAfetadas);
     }
+
+    @PutMapping("/prazoFinal")
+    public ResponseEntity<?> updatePrazoFinal(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date prazoFinal,
+            @RequestParam Long id) {
+        Optional<AndamentosDTO> linhasAfetadas = andamentoService.updatePrazoFinal(prazoFinal, id);
+        return ResponseEntity.status(HttpStatus.OK).body(linhasAfetadas);
+    }
+
+
+
+
 
 }
